@@ -1,0 +1,7 @@
+TRRRST Watch is a minimal, offline companion for the Casio F-B100W (module 3589).
+
+Synchronize time, download steps and distance, configure alarms and the hourly time signal, manage home and world-time cities, and change watch settings such as display format, key sounds, power saving, backlight, connection time, profile, and timer.
+
+All data stays on your phone. The app has no account, cloud synchronization, analytics, ads, proprietary dependencies, or INTERNET permission.
+
+This is an independent, unofficial project and is not affiliated with CASIO.

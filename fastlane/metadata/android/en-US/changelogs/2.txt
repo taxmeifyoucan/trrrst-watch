@@ -1,0 +1,1 @@
+Renamed to TRRRST Watch with a new adaptive icon. Fixed settings toggles, reconnection, and step-count updates. Steps now download on connection without consuming watch history.

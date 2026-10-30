@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Original TRRRST mark: a quiet watch silhouette with a digital T. -->
+    <path
+        android:fillColor="#416D63"
+        android:pathData="M43,17 L65,17 L67,31 L41,31 Z M41,77 L67,77 L65,91 L43,91 Z" />
+
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#9EE8D8"
+        android:strokeWidth="4"
+        android:strokeLineJoin="round"
+        android:pathData="M42,29 L66,29 Q78,29 78,41 L78,67 Q78,79 66,79 L42,79 Q30,79 30,67 L30,41 Q30,29 42,29 Z" />
+
+    <path
+        android:fillColor="#9EE8D8"
+        android:pathData="M79,45 L82,45 Q84,45 84,47 L84,59 Q84,61 82,61 L79,61 Z" />
+
+    <!-- Seven-segment inspired T, deliberately reduced to two shapes. -->
+    <path
+        android:fillColor="#9EE8D8"
+        android:pathData="M42,42 L66,42 L66,48 L42,48 Z M51,48 L57,48 L57,67 L51,67 Z" />
+</vector>

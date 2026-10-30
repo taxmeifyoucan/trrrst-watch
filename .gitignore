@@ -1,0 +1,25 @@
+# Gradle and Android builds
+.gradle/
+build/
+*/build/
+local.properties
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# Signing material — never commit these
+*.jks
+*.keystore
+*.p12
+keystore.properties
+
+# OS and logs
+.DS_Store
+Thumbs.db
+*.log
+
+# Generated release artifacts
+*.apk
+*.aab
