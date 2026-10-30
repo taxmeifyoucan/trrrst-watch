@@ -46,6 +46,17 @@ fun SettingsScreen(vm: WatchViewModel) {
         verticalArrangement = Arrangement.spacedBy(4.dp),
         contentPadding = PaddingValues(vertical = 10.dp)
     ) {
+        item { Text("Connected watch info", style = MaterialTheme.typography.titleSmall) }
+        item {
+            Card {
+                Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    Text("CASIO F-B100W", style = MaterialTheme.typography.bodyLarge)
+                    Text("MAC ${vm.mac}", style = MaterialTheme.typography.bodySmall)
+                    Text(vm.version, style = MaterialTheme.typography.bodySmall)
+                }
+            }
+        }
+        item { HorizontalDivider(Modifier.padding(vertical = 8.dp)) }
         item { Text("Watch", style = MaterialTheme.typography.titleSmall) }
         item { SettingSwitch("24-hour display", b.h24) { vm.saveBasic { c -> c.copy(h24 = it) } } }
         item { SettingSwitch("Key sounds", b.buttonTone) { vm.saveBasic { c -> c.copy(buttonTone = it) } } }

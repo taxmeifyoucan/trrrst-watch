@@ -28,6 +28,10 @@ class BleManager(private val context: Context) {
     private val _found = MutableStateFlow<BluetoothDevice?>(null)
     val found: StateFlow<BluetoothDevice?> = _found
 
+    private val bluetoothAdapter: BluetoothAdapter? by lazy {
+        (context.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager).adapter
+    }
+
     private var gatt: BluetoothGatt? = null
     private var device: BluetoothDevice? = null
     private val mutex = Mutex()
@@ -44,7 +48,7 @@ class BleManager(private val context: Context) {
 
     // ------------------------------------------------ scan & connect
     fun scan(timeoutMs: Long = 90_000) {
-        val scanner = BluetoothAdapter.getDefaultAdapter()?.bluetoothLeScanner ?: return
+        val scanner = bluetoothAdapter?.bluetoothLeScanner ?: return
         _found.value = null   // StateFlow drops re-emits of the same device: reset first
         _state.value = ConnState.SCANNING
         _statusLine.value = "scanning — press the button on the watch"
@@ -76,6 +80,7 @@ class BleManager(private val context: Context) {
         }
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     suspend fun connect(dev: BluetoothDevice): Boolean = suspendCancellableCoroutine { cont ->
         device = dev
         _state.value = ConnState.CONNECTING
@@ -114,6 +119,7 @@ class BleManager(private val context: Context) {
                 }
             }
 
+            @Suppress("DEPRECATION")
             @Deprecated("deprecated")
             override fun onCharacteristicChanged(g: BluetoothGatt, c: BluetoothGattCharacteristic) {
                 c.value?.let { dispatch(c.uuid, it) }

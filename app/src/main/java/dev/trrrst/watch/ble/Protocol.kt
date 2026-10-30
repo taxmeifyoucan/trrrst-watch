@@ -240,7 +240,7 @@ object Protocol {
     }
 
     fun decodeVersion(b: ByteArray): String =
-        "dst ${b[1]}.${b[2]} · fw ${b[3]}.${b[4]} · ble 0x${(b[13].toInt() and 0xFF).toString(16)}"
+        "DST data ${b[1]}.${b[2]} · watch firmware ${b[3]}.${b[4]} · BLE firmware 0x${(b[13].toInt() and 0xFF).toString(16)}"
 
     fun decodeCondition(b: ByteArray): Triple<Int, Int, Int> =
         Triple(b[1].toInt() and 0xFF, b[2].toInt(), (b[5].toInt() and 0xFF) or (b[6].toInt() and 0xFF shl 8))

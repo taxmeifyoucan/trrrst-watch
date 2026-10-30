@@ -1,0 +1,1 @@
+Polished settings reliability: all changes now use current watch state, operations are queued instead of dropped, and alarm/DST writes preserve live watch settings. Expanded protocol regression tests and cleaned Bluetooth interoperability code.

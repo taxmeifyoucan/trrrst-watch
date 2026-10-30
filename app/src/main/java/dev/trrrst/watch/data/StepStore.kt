@@ -9,7 +9,7 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
-/** Step history persisted in filesDir (offline, no account). */
+/** Step history and latest snapshot persisted locally (offline, no account). */
 class StepStore(context: Context) {
     private val file = File(context.filesDir, "steps.json")
     private val df = SimpleDateFormat("yyyy-MM-dd", Locale.US)
@@ -34,11 +34,28 @@ class StepStore(context: Context) {
         if (!file.exists()) return
         runCatching {
             val root = JSONObject(file.readText())
-            val arr = root.getJSONArray("days")
+            val arr = root.optJSONArray("days") ?: JSONArray()
             for (i in 0 until arr.length()) {
                 val o = arr.getJSONObject(i)
                 days[o.getString("date")] =
                     DayEntry(o.getString("date"), o.getInt("steps"), o.getInt("distance"))
+            }
+            val history = days.values.sortedBy { it.date }.takeLast(30)
+            val saved = root.optJSONObject("last")
+            last = if (saved != null) {
+                val hourly = mutableMapOf<Int, Int>()
+                saved.optJSONObject("hourly")?.let { h ->
+                    h.keys().forEach { key -> hourly[key.toInt()] = h.getInt(key) }
+                }
+                Snapshot(
+                    saved.optString("fetchedAt"), saved.optString("watchTime"),
+                    saved.getInt("todaySteps"), saved.getInt("todayDistance"), hourly, history
+                )
+            } else {
+                // Upgrade files written by older versions, which stored only days.
+                history.lastOrNull()?.let {
+                    Snapshot("", "", it.steps, it.distance, emptyMap(), history)
+                }
             }
         }
     }
@@ -52,7 +69,6 @@ class StepStore(context: Context) {
                 val c = rec.timestamp.clone() as Calendar
                 c.add(Calendar.DAY_OF_YEAR, -d.daysAgo)
                 val k = df.format(c.time)
-                // keep the most recent observation of a day
                 days[k] = DayEntry(k, d.steps, d.distance ?: 0)
             }
         }
@@ -72,6 +88,17 @@ class StepStore(context: Context) {
         days.values.sortedBy { it.date }.forEach {
             arr.put(JSONObject().put("date", it.date).put("steps", it.steps).put("distance", it.distance))
         }
-        file.writeText(JSONObject().put("days", arr).toString())
+        val root = JSONObject().put("days", arr)
+        last?.let { snap ->
+            val hourly = JSONObject()
+            snap.hourly.forEach { (hour, steps) -> hourly.put(hour.toString(), steps) }
+            root.put("last", JSONObject()
+                .put("fetchedAt", snap.fetchedAt)
+                .put("watchTime", snap.watchTime)
+                .put("todaySteps", snap.todaySteps)
+                .put("todayDistance", snap.todayDistance)
+                .put("hourly", hourly))
+        }
+        file.writeText(root.toString())
     }
 }
