@@ -1,6 +1,7 @@
 package dev.trrrst.watch.ui
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -13,6 +14,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import dev.trrrst.watch.WatchViewModel
 import dev.trrrst.watch.ble.BleManager
+import dev.trrrst.watch.data.StepStore
+import kotlin.math.roundToInt
 
 @Composable
 fun Mono(text: String, large: Boolean = false, color: androidx.compose.ui.graphics.Color = MaterialTheme.colorScheme.onBackground) {
@@ -106,33 +109,66 @@ fun WatchHome(vm: WatchViewModel) {
         }
         val hist = vm.stepHistory.takeLast(14).reversed()
         if (hist.isNotEmpty()) {
+            item { DailyHistoryChart(vm.stepHistory.takeLast(14)) }
             item { Text("History", style = MaterialTheme.typography.titleSmall) }
             items(hist) { d ->
-                ListItem(
-                    headlineContent = { Mono(d.date) },
-                    trailingContent = { Mono("%,d st · %,d m".format(d.steps, d.distance)) }
-                )
-                HorizontalDivider()
+                HistoryRow(d, vm.profile?.weight)
             }
         }
     }
 }
 
 @Composable
+private fun HistoryRow(day: StepStore.DayEntry, weightKg: Int?) {
+    var expanded by remember(day.date) { mutableStateOf(false) }
+    Column(Modifier.fillMaxWidth().clickable { expanded = !expanded }) {
+        ListItem(
+            headlineContent = { Mono(day.date) },
+            trailingContent = { Mono("%,d st · %,d m".format(day.steps, day.distance)) }
+        )
+        if (expanded) {
+            val text = if (weightKg != null && weightKg > 0) {
+                // Rough net walking estimate: 0.53 kcal per kg per km.
+                val kcal = (day.distance / 1000.0 * weightKg * 0.53).roundToInt()
+                "Estimated active burn: ≈$kcal kcal  ·  based on $weightKg kg"
+            } else {
+                "Set your weight in Settings to estimate calories"
+            }
+            Text(
+                text,
+                modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 10.dp),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.primary
+            )
+        }
+        HorizontalDivider()
+    }
+}
+
+@Composable
 fun HourlyChart(hourly: Map<Int, Int>) {
     val accent = MaterialTheme.colorScheme.primary
+    val muted = MaterialTheme.colorScheme.onSurfaceVariant
     val max = (hourly.values.maxOrNull() ?: 1).coerceAtLeast(1)
-    Canvas(Modifier.fillMaxWidth().height(90.dp)) {
-        val bw = size.width / 24f
-        for (h in 0..23) {
-            val v = hourly[h] ?: 0
-            val bh = if (v == 0) 2f else (v.toFloat() / max) * (size.height - 14f)
-            drawLine(
-                accent,
-                Offset(bw * h + bw / 2, size.height - 2f),
-                Offset(bw * h + bw / 2, size.height - bh),
-                strokeWidth = bw * 0.55f
-            )
+    Column {
+        Text("Today's steps by hour", style = MaterialTheme.typography.titleSmall)
+        Canvas(Modifier.fillMaxWidth().height(90.dp)) {
+            val bw = size.width / 24f
+            for (h in 0..23) {
+                val v = hourly[h] ?: 0
+                val bh = if (v == 0) 2f else (v.toFloat() / max) * (size.height - 14f)
+                drawLine(
+                    accent,
+                    Offset(bw * h + bw / 2, size.height - 2f),
+                    Offset(bw * h + bw / 2, size.height - bh),
+                    strokeWidth = bw * 0.55f
+                )
+            }
+        }
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+            listOf("00", "06", "12", "18", "23").forEach {
+                Text(it, style = MaterialTheme.typography.labelSmall, color = muted)
+            }
         }
     }
 }

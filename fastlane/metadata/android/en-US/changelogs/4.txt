@@ -1,0 +1,1 @@
+Added interactive daily activity charts with area/point rendering and in-progress indicator, hourly labels for today's steps, expandable calorie estimates, five persistent accent colors, and clearer world-time guidance. Accent selection is available at the bottom of Settings.

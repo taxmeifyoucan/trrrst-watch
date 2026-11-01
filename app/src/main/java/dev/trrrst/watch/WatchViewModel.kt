@@ -1,6 +1,7 @@
 package dev.trrrst.watch
 
 import android.app.Application
+import android.content.Context
 import android.media.RingtoneManager
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -18,8 +19,11 @@ import kotlinx.coroutines.sync.withLock
 data class City(val no: Int, val name: String, val tzMin: Int, val dstMin: Int, val rule: Int)
 
 class WatchViewModel(app: Application) : AndroidViewModel(app) {
+    private val preferences = app.getSharedPreferences("ui", Context.MODE_PRIVATE)
     val ble = BleManager(app)
     val steps = StepStore(app)
+    var accentIndex by mutableStateOf(preferences.getInt("accentIndex", 0))
+        private set
     var stepsSnapshot by mutableStateOf(steps.last)
         private set
     var stepHistory by mutableStateOf(steps.history())
@@ -114,6 +118,11 @@ class WatchViewModel(app: Application) : AndroidViewModel(app) {
     fun setFinderSound(type: Int) {
         finderSoundType = type
         ringtone = null
+    }
+
+    fun selectAccent(index: Int) {
+        accentIndex = index
+        preferences.edit().putInt("accentIndex", index).apply()
     }
 
     fun scanConnect() = ble.scan()

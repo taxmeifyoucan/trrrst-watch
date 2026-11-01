@@ -1,13 +1,19 @@
 package dev.trrrst.watch.ui
 
 import android.app.TimePickerDialog
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -132,6 +138,36 @@ fun SettingsScreen(vm: WatchViewModel) {
                 NumField("S", ts.toString(), Modifier.weight(1f)) { ts = it.toIntOrNull() ?: 0 }
             }
             Button(onClick = { vm.saveTimer(th, tm, ts) }, enabled = !vm.busy) { Text("Save timer") }
+        }
+        item { HorizontalDivider(Modifier.padding(vertical = 8.dp)) }
+        item { Text("Appearance", style = MaterialTheme.typography.titleSmall) }
+        item { AccentColorPicker(vm) }
+    }
+}
+
+@Composable
+private fun AccentColorPicker(vm: WatchViewModel) {
+    Row(
+        Modifier.fillMaxWidth().padding(vertical = 4.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        Text("Accent color")
+        Spacer(Modifier.weight(1f))
+        AccentColors.forEachIndexed { index, color ->
+            val selected = vm.accentIndex == index
+            Box(
+                Modifier
+                    .size(30.dp)
+                    .clip(CircleShape)
+                    .background(color)
+                    .border(
+                        width = if (selected) 2.dp else 0.dp,
+                        color = if (selected) Color.White else Color.Transparent,
+                        shape = CircleShape
+                    )
+                    .clickable { vm.selectAccent(index) }
+            )
         }
     }
 }

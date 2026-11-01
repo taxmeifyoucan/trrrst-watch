@@ -21,8 +21,8 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            TrrrstTheme {
-                val vm: WatchViewModel = viewModel()
+            val vm: WatchViewModel = viewModel()
+            TrrrstTheme(accentIndex = vm.accentIndex) {
                 var permitted by remember { mutableStateOf(hasPermissions()) }
                 val launcher = rememberLauncherForActivityResult(
                     ActivityResultContracts.RequestMultiplePermissions()

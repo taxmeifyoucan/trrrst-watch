@@ -104,6 +104,13 @@ fun WorldScreen(vm: WatchViewModel) {
                     Text("Swap home ↔ world")
                 }
             }
+            Text(
+                "Home time is synchronized from your phone, so it should reflect your current location. " +
+                    "World time is calculated as an offset from it. When travelling, let your phone " +
+                    "change time zone first, then update your home city.",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
         }
     }
 }

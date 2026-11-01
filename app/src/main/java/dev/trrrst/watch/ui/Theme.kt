@@ -10,6 +10,15 @@ val BgDark = Color(0xFF0B0E0D)
 val CardDark = Color(0xFF161B19)
 val OnBg = Color(0xFFE3E8E6)
 
+/** Muted accents that remain readable on the dark UI. Index 0 is the original. */
+val AccentColors = listOf(
+    Teal,
+    Color(0xFF9ECBFF), // ice blue
+    Color(0xFFD0BCFF), // lavender
+    Color(0xFFFFCC99), // peach
+    Color(0xFFFFB3C2)  // rose
+)
+
 private val scheme = darkColorScheme(
     primary = Teal,
     background = BgDark,
@@ -22,6 +31,7 @@ private val scheme = darkColorScheme(
 )
 
 @Composable
-fun TrrrstTheme(content: @Composable () -> Unit) {
-    MaterialTheme(colorScheme = scheme, content = content)
+fun TrrrstTheme(accentIndex: Int = 0, content: @Composable () -> Unit) {
+    val accent = AccentColors.getOrElse(accentIndex) { AccentColors[0] }
+    MaterialTheme(colorScheme = scheme.copy(primary = accent), content = content)
 }
